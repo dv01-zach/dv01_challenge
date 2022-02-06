@@ -2,6 +2,20 @@ import pandas as pd
 import glob
 
 def create_table(data_file):
+    ''''
+    Given csv path data_file, computes a table with the following output fields, grouped by grade as well as with a total:
+    - Total Issued - This is the total loan amount in dollars
+    - Fully Paid - This is the initial loan amount of all loans which are fully paid in dollars
+    - Current - This is the outstanding principal amount on all loans which are current (including grace period) in dollars.
+    - Late - This is the outstanding principal amount on all loans which are late in dollars
+    - Charged Off (Net) - This is the amount of balance which has been charged off in dollars. This is computed by calculating
+      the difference in the original loan amount and the total payments, and adding back in interest and late fees, since they
+      do not contribue to reducing the principal owed.
+    - Principal Payments Received - This is the amount of principal received. This is computed by taking the original loan amount
+      and subtracting the current balance, late balance, and charge offs
+    - Interest Payments Received - This is the amount of interest that has been paid
+    - Avg. Interest Rate - This is the initial balance-weighted interest rate
+    '''
     data = pd.read_csv(data_file,skiprows=1,low_memory=False)
     data_cln = data[~pd.isna(data.grade)].copy()
     
@@ -39,6 +53,10 @@ def create_table(data_file):
     return to_return
 
 def format_table(table):
+    ''''
+    Given table, formats such that dollar fields are displayed with dollar sign, commas, and rounded to the nearest dollar.
+    The one percent field, Avg. Interest Rate is formatted to show as a percent rounded to 2 decimals
+    '''
     to_return = table.copy()
     dollar_fmt_cols = ["Total Issued", "Fully Paid", "Current", "Late", "Charged Off (Net)", 
                        "Principal Payments Received", "Interest Payments Received"]
